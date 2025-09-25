@@ -46,19 +46,32 @@ opkg install luci-app-fuck-pcdn_*.ipk
 
 ### 从源码编译
 
-#### 使用构建脚本 (推荐)
+#### 快速构建 (推荐)
 
 ```bash
 # 克隆仓库
 git clone https://github.com/pikachuim/luci-app-fuck-pcdn.git
 cd luci-app-fuck-pcdn
 
-# 构建所有架构
+# 快速构建 IPK 包（无需下载 SDK）
+chmod +x build-simple.sh
+./build-simple.sh
+
+# 指定版本和输出目录
+./build-simple.sh -v 1.0.1 -o release
+```
+
+#### 完整 SDK 构建
+
+```bash
+# 使用完整 OpenWrt SDK 构建（较慢但更兼容）
 ./build.sh all
 
 # 或构建特定架构
 ./build.sh x86_64
 ```
+
+> **💡 提示**: 对于本项目（纯 LuCI 应用），推荐使用快速构建方式。详见 [BUILD_METHODS.md](BUILD_METHODS.md)
 
 #### 集成到 OpenWrt 构建系统
 

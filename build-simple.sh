@@ -141,7 +141,8 @@ fi
 find "$DATA_DIR" -type f -exec chmod 644 {} \;
 find "$DATA_DIR" -type d -exec chmod 755 {} \;
 
-# 创建输出目录
+# 创建输出目录（使用绝对路径）
+OUTPUT_DIR=$(realpath "$OUTPUT_DIR")
 mkdir -p "$OUTPUT_DIR"
 
 # 打包 IPK
