@@ -7,7 +7,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_DIR="$SCRIPT_DIR/build"
-OPENWRT_VERSION="22.03.7"
+OPENWRT_VERSION="24.10.3"
 
 # 颜色输出
 RED='\033[0;31m'
@@ -77,7 +77,7 @@ get_sdk_url() {
             sdk_path="x86/64"
             ;;
         "aarch64_generic")
-            sdk_path="armvirt/64"
+            sdk_path="armsr/armv8"
             ;;
         "arm_cortex-a9")
             sdk_path="bcm27xx/bcm2709"
@@ -94,7 +94,7 @@ get_sdk_url() {
             ;;
     esac
     
-    echo "https://downloads.openwrt.org/releases/$OPENWRT_VERSION/targets/$sdk_path/openwrt-sdk-$OPENWRT_VERSION-${sdk_path}_gcc-11.2.0_musl.Linux-x86_64.tar.xz"
+    echo "https://downloads.openwrt.org/releases/$OPENWRT_VERSION/targets/$sdk_path/openwrt-sdk-$OPENWRT_VERSION-${sdk_path//\//-}_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
 }
 
 # 下载并设置 SDK
@@ -109,9 +109,9 @@ setup_sdk() {
     cd "$BUILD_DIR"
     
     # 下载 SDK
-    if [ ! -f "sdk-$arch.tar.xz" ]; then
+    if [ ! -f "sdk-$arch.tar.zst" ]; then
         log_info "下载 SDK: $sdk_url"
-        wget -O "sdk-$arch.tar.xz" "$sdk_url" || {
+        wget -O "sdk-$arch.tar.zst" "$sdk_url" || {
             log_error "SDK 下载失败"
             return 1
         }
@@ -122,7 +122,7 @@ setup_sdk() {
     # 解压 SDK
     if [ ! -d "$sdk_dir" ]; then
         log_info "解压 SDK..."
-        tar -xf "sdk-$arch.tar.xz"
+        tar --zstd -xf "sdk-$arch.tar.zst"
         mv openwrt-sdk-* "$sdk_dir"
     fi
     
@@ -131,10 +131,10 @@ setup_sdk() {
     # 设置 feeds
     log_info "配置 feeds..."
     cat > feeds.conf << 'EOF'
-src-git packages https://git.openwrt.org/feed/packages.git^openwrt-22.03
-src-git luci https://git.openwrt.org/project/luci.git^openwrt-22.03
-src-git routing https://git.openwrt.org/feed/routing.git^openwrt-22.03
-src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-22.03
+src-git packages https://git.openwrt.org/feed/packages.git^openwrt-24.10
+src-git luci https://git.openwrt.org/project/luci.git^openwrt-24.10
+src-git routing https://git.openwrt.org/feed/routing.git^openwrt-24.10
+src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-24.10
 EOF
     
     ./scripts/feeds update -a

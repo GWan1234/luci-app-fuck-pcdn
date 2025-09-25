@@ -12,12 +12,12 @@ on:
         default: 'v1.0.0'
 
 env:
-  OPENWRT_VERSION: "22.03.7"
+  OPENWRT_VERSION: "24.10.3"
   FEEDS_CONF: |
-    src-git packages https://git.openwrt.org/feed/packages.git^openwrt-22.03
-    src-git luci https://git.openwrt.org/project/luci.git^openwrt-22.03
-    src-git routing https://git.openwrt.org/feed/routing.git^openwrt-22.03
-    src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-22.03
+    src-git packages https://git.openwrt.org/feed/packages.git^openwrt-24.10
+    src-git luci https://git.openwrt.org/project/luci.git^openwrt-24.10
+    src-git routing https://git.openwrt.org/feed/routing.git^openwrt-24.10
+    src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-24.10
 
 jobs:
   build:
@@ -30,7 +30,7 @@ jobs:
           - arch: "x86_64"
             sdk_url_path: "x86/64"
           - arch: "aarch64_generic"
-            sdk_url_path: "armvirt/64"
+            sdk_url_path: "armsr/armv8"
           - arch: "arm_cortex-a9"
             sdk_url_path: "bcm27xx/bcm2709"
           - arch: "mips_24kc"
@@ -46,14 +46,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev \
-            zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
+            zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3 zstd
           
       - name: Download OpenWrt SDK
         run: |
-          SDK_URL="https://downloads.openwrt.org/releases/${{ env.OPENWRT_VERSION }}/targets/${{ matrix.target.sdk_url_path }}/openwrt-sdk-${{ env.OPENWRT_VERSION }}-${{ matrix.target.sdk_url_path }}_gcc-11.2.0_musl.Linux-x86_64.tar.xz"
+          SDK_PATH_FORMATTED=$(echo "${{ matrix.target.sdk_url_path }}" | sed 's|/|-|g')
+          SDK_URL="https://downloads.openwrt.org/releases/${{ env.OPENWRT_VERSION }}/targets/${{ matrix.target.sdk_url_path }}/openwrt-sdk-${{ env.OPENWRT_VERSION }}-${SDK_PATH_FORMATTED}_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
           echo "Downloading SDK from: $SDK_URL"
-          wget -O sdk.tar.xz "$SDK_URL"
-          tar -xf sdk.tar.xz
+          wget -O sdk.tar.zst "$SDK_URL"
+          tar --zstd -xf sdk.tar.zst
           mv openwrt-sdk-* openwrt-sdk
           
       - name: Setup Feeds
