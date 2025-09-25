@@ -7,7 +7,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BUILD_DIR="$SCRIPT_DIR/build"
-OPENWRT_VERSION="23.05.2"
+OPENWRT_VERSION="22.03.7"
 
 # 颜色输出
 RED='\033[0;31m'
@@ -94,7 +94,7 @@ get_sdk_url() {
             ;;
     esac
     
-    echo "https://downloads.openwrt.org/releases/$OPENWRT_VERSION/targets/$sdk_path/openwrt-sdk-$OPENWRT_VERSION-${sdk_path}_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+    echo "https://downloads.openwrt.org/releases/$OPENWRT_VERSION/targets/$sdk_path/openwrt-sdk-$OPENWRT_VERSION-${sdk_path}_gcc-11.2.0_musl.Linux-x86_64.tar.xz"
 }
 
 # 下载并设置 SDK
@@ -131,10 +131,10 @@ setup_sdk() {
     # 设置 feeds
     log_info "配置 feeds..."
     cat > feeds.conf << 'EOF'
-src-git packages https://git.openwrt.org/feed/packages.git^openwrt-23.05
-src-git luci https://git.openwrt.org/project/luci.git^openwrt-23.05
-src-git routing https://git.openwrt.org/feed/routing.git^openwrt-23.05
-src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-23.05
+src-git packages https://git.openwrt.org/feed/packages.git^openwrt-22.03
+src-git luci https://git.openwrt.org/project/luci.git^openwrt-22.03
+src-git routing https://git.openwrt.org/feed/routing.git^openwrt-22.03
+src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-22.03
 EOF
     
     ./scripts/feeds update -a

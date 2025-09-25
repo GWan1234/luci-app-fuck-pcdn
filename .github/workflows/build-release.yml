@@ -12,12 +12,12 @@ on:
         default: 'v1.0.0'
 
 env:
-  OPENWRT_VERSION: "23.05.2"
+  OPENWRT_VERSION: "22.03.7"
   FEEDS_CONF: |
-    src-git packages https://git.openwrt.org/feed/packages.git^openwrt-23.05
-    src-git luci https://git.openwrt.org/project/luci.git^openwrt-23.05
-    src-git routing https://git.openwrt.org/feed/routing.git^openwrt-23.05
-    src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-23.05
+    src-git packages https://git.openwrt.org/feed/packages.git^openwrt-22.03
+    src-git luci https://git.openwrt.org/project/luci.git^openwrt-22.03
+    src-git routing https://git.openwrt.org/feed/routing.git^openwrt-22.03
+    src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-22.03
 
 jobs:
   build:
@@ -50,7 +50,7 @@ jobs:
           
       - name: Download OpenWrt SDK
         run: |
-          SDK_URL="https://downloads.openwrt.org/releases/${{ env.OPENWRT_VERSION }}/targets/${{ matrix.target.sdk_url_path }}/openwrt-sdk-${{ env.OPENWRT_VERSION }}-${{ matrix.target.sdk_url_path }}_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+          SDK_URL="https://downloads.openwrt.org/releases/${{ env.OPENWRT_VERSION }}/targets/${{ matrix.target.sdk_url_path }}/openwrt-sdk-${{ env.OPENWRT_VERSION }}-${{ matrix.target.sdk_url_path }}_gcc-11.2.0_musl.Linux-x86_64.tar.xz"
           echo "Downloading SDK from: $SDK_URL"
           wget -O sdk.tar.xz "$SDK_URL"
           tar -xf sdk.tar.xz
