@@ -1,0 +1,70 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Project-Id-Version: luci-app-fuck-pcdn\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: zh_Hans\n"
+"MIME-Version: 1.0\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "PCDN屏蔽器"
+msgstr "PCDN屏蔽器"
+
+msgid "屏蔽主流视频和音乐平台的PCDN域名，强制使用原始CDN"
+msgstr "屏蔽主流视频和音乐平台的PCDN域名，强制使用原始CDN"
+
+msgid "基本设置"
+msgstr "基本设置"
+
+msgid "启用插件"
+msgstr "启用插件"
+
+msgid "启用或禁用PCDN屏蔽功能"
+msgstr "启用或禁用PCDN屏蔽功能"
+
+msgid "屏蔽列表"
+msgstr "屏蔽列表"
+
+msgid "QQ音乐"
+msgstr "QQ音乐"
+
+msgid "屏蔽QQ音乐的PCDN域名"
+msgstr "屏蔽QQ音乐的PCDN域名"
+
+msgid "腾讯视频"
+msgstr "腾讯视频"
+
+msgid "屏蔽腾讯视频的PCDN域名"
+msgstr "屏蔽腾讯视频的PCDN域名"
+
+msgid "爱奇艺"
+msgstr "爱奇艺"
+
+msgid "屏蔽爱奇艺的PCDN域名"
+msgstr "屏蔽爱奇艺的PCDN域名"
+
+msgid "优酷视频"
+msgstr "优酷视频"
+
+msgid "屏蔽优酷视频的PCDN域名"
+msgstr "屏蔽优酷视频的PCDN域名"
+
+msgid "Bilibili"
+msgstr "Bilibili"
+
+msgid "屏蔽Bilibili的PCDN域名"
+msgstr "屏蔽Bilibili的PCDN域名"
+
+msgid "设置已应用成功"
+msgstr "设置已应用成功"
+
+msgid "应用设置时出现错误: "
+msgstr "应用设置时出现错误: "
+
+msgid "未知错误"
+msgstr "未知错误"
+
+msgid "应用设置失败: "
+msgstr "应用设置失败: "

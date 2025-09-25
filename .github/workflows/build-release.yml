@@ -1,0 +1,183 @@
+name: Build and Release IPK
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+env:
+  OPENWRT_VERSION: "23.05.2"
+  FEEDS_CONF: |
+    src-git packages https://git.openwrt.org/feed/packages.git^openwrt-23.05
+    src-git luci https://git.openwrt.org/project/luci.git^openwrt-23.05
+    src-git routing https://git.openwrt.org/feed/routing.git^openwrt-23.05
+    src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-23.05
+
+jobs:
+  build:
+    name: Build IPK for ${{ matrix.target }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - arch: "x86_64"
+            sdk_url_path: "x86/64"
+          - arch: "aarch64_generic"
+            sdk_url_path: "armvirt/64"
+          - arch: "arm_cortex-a9"
+            sdk_url_path: "bcm27xx/bcm2709"
+          - arch: "mips_24kc"
+            sdk_url_path: "ath79/generic"
+          - arch: "mipsel_24kc"
+            sdk_url_path: "ramips/mt7621"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Environment
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libncurses5-dev libncursesw5-dev \
+            zlib1g-dev gawk git gettext libssl-dev xsltproc rsync wget unzip python3
+          
+      - name: Download OpenWrt SDK
+        run: |
+          SDK_URL="https://downloads.openwrt.org/releases/${{ env.OPENWRT_VERSION }}/targets/${{ matrix.target.sdk_url_path }}/openwrt-sdk-${{ env.OPENWRT_VERSION }}-${{ matrix.target.sdk_url_path }}_gcc-12.3.0_musl.Linux-x86_64.tar.xz"
+          echo "Downloading SDK from: $SDK_URL"
+          wget -O sdk.tar.xz "$SDK_URL"
+          tar -xf sdk.tar.xz
+          mv openwrt-sdk-* openwrt-sdk
+          
+      - name: Setup Feeds
+        run: |
+          cd openwrt-sdk
+          echo "${{ env.FEEDS_CONF }}" > feeds.conf
+          ./scripts/feeds update -a
+          ./scripts/feeds install -a
+          
+      - name: Copy Package to SDK
+        run: |
+          mkdir -p openwrt-sdk/package/luci-app-fuck-pcdn
+          cp -r * openwrt-sdk/package/luci-app-fuck-pcdn/ || true
+          rm -rf openwrt-sdk/package/luci-app-fuck-pcdn/.git
+          rm -rf openwrt-sdk/package/luci-app-fuck-pcdn/.github
+          
+      - name: Configure Build
+        run: |
+          cd openwrt-sdk
+          make defconfig
+          echo "CONFIG_PACKAGE_luci-app-fuck-pcdn=m" >> .config
+          make defconfig
+          
+      - name: Build Package
+        run: |
+          cd openwrt-sdk
+          make package/luci-app-fuck-pcdn/compile V=s
+          
+      - name: Find and Prepare IPK
+        run: |
+          cd openwrt-sdk
+          find bin/ -name "luci-app-fuck-pcdn*.ipk" -exec cp {} ../luci-app-fuck-pcdn_${{ matrix.target.arch }}.ipk \;
+          ls -la ../luci-app-fuck-pcdn_${{ matrix.target.arch }}.ipk
+          
+      - name: Upload IPK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: luci-app-fuck-pcdn-${{ matrix.target.arch }}
+          path: luci-app-fuck-pcdn_${{ matrix.target.arch }}.ipk
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Download All Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          
+      - name: Prepare Release Files
+        run: |
+          mkdir -p release
+          find artifacts -name "*.ipk" -exec cp {} release/ \;
+          ls -la release/
+          
+          # Create checksums
+          cd release
+          sha256sum *.ipk > SHA256SUMS
+          cd ..
+          
+      - name: Get Release Tag
+        id: get_tag
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ github.event.inputs.tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Generate Release Notes
+        id: release_notes
+        run: |
+          cat > release_notes.md << 'EOF'
+          ## LuCI App Fuck PCDN ${{ steps.get_tag.outputs.tag }}
+          
+          ### 功能特性
+          - 🚫 屏蔽主流视频和音乐平台的 PCDN 域名
+          - 🎵 支持 QQ音乐、腾讯视频、爱奇艺、优酷、Bilibili
+          - 🌐 支持远程 JSON API 获取域名列表
+          - 🔧 简洁的 LuCI Web 界面
+          - 🔄 自动备份和恢复功能
+          
+          ### 支持的架构
+          - x86_64 (适用于 x86 64位设备)
+          - aarch64_generic (适用于 ARM64 设备)
+          - arm_cortex-a9 (适用于树莓派等 ARM 设备)
+          - mips_24kc (适用于 ath79 平台路由器)
+          - mipsel_24kc (适用于 ramips 平台路由器)
+          
+          ### 安装方法
+          1. 下载对应架构的 IPK 文件
+          2. 上传到路由器: `scp luci-app-fuck-pcdn_*.ipk root@192.168.1.1:/tmp/`
+          3. 安装软件包: `opkg install /tmp/luci-app-fuck-pcdn_*.ipk`
+          4. 重启服务: `/etc/init.d/rpcd restart && /etc/init.d/uhttpd restart`
+          
+          ### 使用说明
+          1. 登录 LuCI 管理界面
+          2. 导航到 "服务" → "PCDN屏蔽器"
+          3. 启用插件并选择要屏蔽的平台
+          4. 点击"保存&应用"
+          
+          ### 文件校验
+          请使用 SHA256SUMS 文件验证下载文件的完整性：
+          ```bash
+          sha256sum -c SHA256SUMS
+          ```
+          EOF
+          
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          name: LuCI App Fuck PCDN ${{ steps.get_tag.outputs.tag }}
+          body_path: release_notes.md
+          files: |
+            release/*.ipk
+            release/SHA256SUMS
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

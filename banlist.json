@@ -1,0 +1,37 @@
+{
+    "qq_music": [
+        "musicps.p2p.qq.com",
+        "p.tencentmusic.com",
+        "twns.p2ptun.qq.com",
+        "p2p.music.qq.com",
+        "ws.stream.qqmusic.qq.com"
+    ],
+    "tencent_video": [
+        "p2p.video.qq.com",
+        "livep2p.video.qq.com",
+        "btrace.video.qq.com",
+        "vd.l.qq.com",
+        "livew.l.qq.com"
+    ],
+    "iqiyi": [
+        "p2p.iqiyi.com",
+        "p2p-live.iqiyi.com",
+        "msg.71.am",
+        "msg.qy.net",
+        "cupid.iqiyi.com"
+    ],
+    "youku": [
+        "p2p.youku.com",
+        "p2p-live.youku.com",
+        "hudong.pl.youku.com",
+        "lstat.youku.com",
+        "atm.youku.com"
+    ],
+    "bilibili": [
+        "p2p.biliapi.net",
+        "p2p.bilibili.com",
+        "livep2p.bilibili.com",
+        "data.bilibili.com",
+        "cm.bilibili.com"
+    ]
+}

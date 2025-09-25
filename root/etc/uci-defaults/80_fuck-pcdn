@@ -1,0 +1,26 @@
+#!/bin/sh
+
+# UCI defaults for luci-app-fuck-pcdn
+# This script creates the default configuration structure
+
+# Create the main configuration file
+uci -q batch <<-EOF >/dev/null
+	delete fuck-pcdn.settings
+	set fuck-pcdn.settings=settings
+	set fuck-pcdn.settings.enabled='0'
+	
+	delete fuck-pcdn.platform
+	set fuck-pcdn.platform=platform
+	set fuck-pcdn.platform.qq_music='0'
+	set fuck-pcdn.platform.tencent_video='0'
+	set fuck-pcdn.platform.iqiyi='0'
+	set fuck-pcdn.platform.youku='0'
+	set fuck-pcdn.platform.bilibili='0'
+	
+	commit fuck-pcdn
+EOF
+
+# Ensure the script is only run once
+rm -f /etc/uci-defaults/80_fuck-pcdn
+
+exit 0
