@@ -18,11 +18,13 @@
 - 优化了备用域名机制，确保在线获取失败时的可靠性
 
 ### 修复
-- 修复了 OpenWrt SDK 下载链接 404 错误
-- 将 OpenWrt 版本从 23.05.2 升级为 24.10.3（最新稳定版）
+- 修复了镜像源 SDK 下载链接问题
+- 升级到 OpenWrt 24.10.3，修复了从 23.05.2 版本的兼容性问题
 - 更新了构建脚本和 GitHub Actions 中的 SDK URL
-- 支持新的 .zst 压缩格式和 armsr/armv8 架构路径
-- 更新 GCC 版本到 13.3.0 和 feeds 到 openwrt-24.10 分支
+- 支持新的 `.zst` 压缩格式和 `armsr/armv8` 架构路径
+- 更新 GCC 到 13.3.0 版本，feeds 更新到 `openwrt-24.10` 分支
+- 修复了 bcm27xx/bcm2709 架构使用 `musl_eabi` 而非 `musl` 的问题
+- 临时移除 telephony feed 以解决构建过程中的包信息收集错误
 
 ## [1.0.0] - 2024-01-01
 

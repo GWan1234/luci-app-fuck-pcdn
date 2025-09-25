@@ -71,6 +71,7 @@ clean_build() {
 get_sdk_url() {
     local arch=$1
     local sdk_path=""
+    local musl_variant="musl"
     
     case $arch in
         "x86_64")
@@ -81,6 +82,7 @@ get_sdk_url() {
             ;;
         "arm_cortex-a9")
             sdk_path="bcm27xx/bcm2709"
+            musl_variant="musl_eabi"
             ;;
         "mips_24kc")
             sdk_path="ath79/generic"
@@ -94,7 +96,7 @@ get_sdk_url() {
             ;;
     esac
     
-    echo "https://downloads.openwrt.org/releases/$OPENWRT_VERSION/targets/$sdk_path/openwrt-sdk-$OPENWRT_VERSION-${sdk_path//\//-}_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
+    echo "https://downloads.openwrt.org/releases/$OPENWRT_VERSION/targets/$sdk_path/openwrt-sdk-$OPENWRT_VERSION-${sdk_path//\//-}_gcc-13.3.0_${musl_variant}.Linux-x86_64.tar.zst"
 }
 
 # 下载并设置 SDK
@@ -134,7 +136,6 @@ setup_sdk() {
 src-git packages https://git.openwrt.org/feed/packages.git^openwrt-24.10
 src-git luci https://git.openwrt.org/project/luci.git^openwrt-24.10
 src-git routing https://git.openwrt.org/feed/routing.git^openwrt-24.10
-src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-24.10
 EOF
     
     ./scripts/feeds update -a

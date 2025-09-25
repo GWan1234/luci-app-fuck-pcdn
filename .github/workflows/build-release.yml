@@ -17,7 +17,6 @@ env:
     src-git packages https://git.openwrt.org/feed/packages.git^openwrt-24.10
     src-git luci https://git.openwrt.org/project/luci.git^openwrt-24.10
     src-git routing https://git.openwrt.org/feed/routing.git^openwrt-24.10
-    src-git telephony https://git.openwrt.org/feed/telephony.git^openwrt-24.10
 
 jobs:
   build:
@@ -29,14 +28,19 @@ jobs:
         target:
           - arch: "x86_64"
             sdk_url_path: "x86/64"
-          - arch: "aarch64_generic"
-            sdk_url_path: "armsr/armv8"
-          - arch: "arm_cortex-a9"
-            sdk_url_path: "bcm27xx/bcm2709"
-          - arch: "mips_24kc"
-            sdk_url_path: "ath79/generic"
-          - arch: "mipsel_24kc"
-            sdk_url_path: "ramips/mt7621"
+            musl_variant: "musl"
+          # - arch: "aarch64_generic"
+          #   sdk_url_path: "armsr/armv8"
+          #   musl_variant: "musl"
+          # - arch: "arm_cortex-a9"
+          #   sdk_url_path: "bcm27xx/bcm2709"
+          #   musl_variant: "musl_eabi"
+          # - arch: "mips_24kc"
+          #   sdk_url_path: "ath79/generic"
+          #   musl_variant: "musl"
+          # - arch: "mipsel_24kc"
+          #   sdk_url_path: "ramips/mt7621"
+          #   musl_variant: "musl"
 
     steps:
       - name: Checkout
@@ -51,7 +55,7 @@ jobs:
       - name: Download OpenWrt SDK
         run: |
           SDK_PATH_FORMATTED=$(echo "${{ matrix.target.sdk_url_path }}" | sed 's|/|-|g')
-          SDK_URL="https://downloads.openwrt.org/releases/${{ env.OPENWRT_VERSION }}/targets/${{ matrix.target.sdk_url_path }}/openwrt-sdk-${{ env.OPENWRT_VERSION }}-${SDK_PATH_FORMATTED}_gcc-13.3.0_musl.Linux-x86_64.tar.zst"
+          SDK_URL="https://downloads.openwrt.org/releases/${{ env.OPENWRT_VERSION }}/targets/${{ matrix.target.sdk_url_path }}/openwrt-sdk-${{ env.OPENWRT_VERSION }}-${SDK_PATH_FORMATTED}_gcc-13.3.0_${{ matrix.target.musl_variant }}.Linux-x86_64.tar.zst"
           echo "Downloading SDK from: $SDK_URL"
           wget -O sdk.tar.zst "$SDK_URL"
           tar --zstd -xf sdk.tar.zst
