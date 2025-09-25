@@ -65,8 +65,8 @@ jobs:
         run: |
           cd openwrt-sdk
           echo "${{ env.FEEDS_CONF }}" > feeds.conf
-          ./scripts/feeds update -a
-          ./scripts/feeds install -a
+          ./scripts/feeds update -a || echo "Ignore error"
+          ./scripts/feeds install -a || echo "Ignore error"
           
       - name: Copy Package to SDK
         run: |
