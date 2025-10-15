@@ -120,6 +120,9 @@ fi
 
 # 复制根文件系统文件
 if [ -d "root" ]; then
+    # 设置 UTF-8 编码环境
+    export LC_ALL=C.UTF-8
+    export LANG=C.UTF-8
     cp -r root/* "$DATA_DIR/"
 fi
 
